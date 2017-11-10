@@ -1,0 +1,73 @@
+group 'chksm-kt'
+version '0.1.0'
+
+// kotlin
+buildscript {
+    ext.kotlin_version = '1.1.51'
+
+    repositories {
+        mavenCentral()
+    }
+    dependencies {
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
+    }
+}
+
+// dokka
+buildscript {
+    ext.dokka_version = '0.9.15'
+
+    repositories {
+        jcenter()
+    }
+
+    dependencies {
+        classpath "org.jetbrains.dokka:dokka-gradle-plugin:$dokka_version"
+    }
+}
+
+apply plugin: 'java'
+apply plugin: 'kotlin'
+apply plugin: 'org.jetbrains.dokka'
+apply plugin: 'application'
+
+sourceCompatibility = 1.8
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    compile "org.jetbrains.kotlin:kotlin-stdlib-jre8:$kotlin_version"
+// https://mvnrepository.com/artifact/commons-codec/commons-codec
+    compile group: 'commons-codec', name: 'commons-codec', version: '1.11'
+    testCompile group: 'junit', name: 'junit', version: '4.12'
+}
+
+mainClassName = "com.github.aburgd.chksm.checksum.Checksum"
+
+defaultTasks 'run'
+
+compileKotlin {
+    kotlinOptions.jvmTarget = "1.8"
+}
+compileTestKotlin {
+    kotlinOptions.jvmTarget = "1.8"
+}
+
+dokka {
+    outputFormat = 'html'
+}
+
+sourceSets {
+    main.kotlin.srcDirs += 'src/main/kotlin/'
+    main.java.srcDirs += 'src/main/java'
+}
+
+jar {
+    manifest {
+        attributes 'Main-Class': 'com.github.aburgd.chksm.checksum.Checksum'
+    }
+
+    from { configurations.compile.collect { it.isDirectory() ? it : zipTree(it) } }
+}
